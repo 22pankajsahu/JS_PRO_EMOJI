@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji Project</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300&display=swap">
+    <meta name="author" content="PANKAJ SAHU">
+    <meta name="keywords" content="Emoji, mood, moodies, reactions, happy, flower">
+    <meta name="description" content="A simple web application to display the List of emojis on the basis of search.">
+
+    <style>
+        :root {
+            --black: #000000;
+            --white: #ffffff;
+            --gray: #333333;
+        }
+
+        body, h1, h2, h3, h4, h5, h6, p {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        body {
+            background-color: var(--black);
+            color: var(--white);
+        }
+
+        .container {
+            padding: 1rem;
+        }
+
+        .mt-3 {
+            margin-top: 3rem;
+        }
+
+        .mt-2 {
+            margin-top: 2rem;
+        }
+
+        input {
+            font-size: 120%;
+            border-radius: 0;
+            border: solid transparent;
+        }
+
+        input[type="submit"] {
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: var(--black);
+            color: var(--white);
+            border-color: var(--gray);
+        }
+
+        .emoji {
+            font-size: 300%;
+            width: 8rem;
+            max-width: 8rem;
+        }
+
+        .aliases {
+            text-transform: capitalize;
+            font-size: 125%;
+        }
+
+        .desc {
+            font-size: 125%;
+        }
+
+        .desc::first-letter {
+            text-transform: uppercase;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        tr, td {
+            border: 1px solid var(--gray);
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-3">
+        <h1>Emoji Project - Emoji 🔍 Application</h1>
+        <hr>
+        <form id="search_form">
+            <input type="text" id="search_field" autocomplete="off" placeholder="Emoji Search">
+            <input type="submit" value="Search">
+        </form>
+        <br><br>
+        <table>
+            <tbody id="search_result_container"></tbody>
+        </table>
+    </div>
+    <script src="./emojiList.js"></script>
+    <script>
+        const searchEmoji = (e) => {
+            e.preventDefault();
+            const value = document.getElementById("search_field").value;
+            displaySearchResults(value);
+            return false;
+        }
+
+        const autoSearch = (e) => {
+            const value = e.target.value;
+            displaySearchResults(value);
+        }
+
+        const displaySearchResults = (searchQuery = "") => {
+            const filtered = emojiList.filter((e) => {
+                if (
+                    e.description.indexOf(searchQuery) !== -1 ||
+                    e.aliases.some((elem) => elem.startsWith(searchQuery)) ||
+                    e.tags.some((elem) => elem.startsWith(searchQuery))
+                ) {
+                    return true;
+                }
+            });
+
+            const parent = document.getElementById("search_result_container");
+            parent.innerHTML = "";
+            filtered.forEach((e) => {
+                const new_row = document.createElement("tr");
+                const new_emoji = document.createElement("td");
+                const new_aliases = document.createElement("td");
+                const new_desc = document.createElement("td");
+
+                new_emoji.innerText = e.emoji;
+                new_aliases.innerText = e.aliases.join(", ").replaceAll("_", " ");
+                new_desc.innerText = e.description;
+
+                new_emoji.classList.add("emoji");
+                new_aliases.classList.add("aliases");
+                new_desc.classList.add("desc");
+
+                new_row.appendChild(new_emoji);
+                new_row.appendChild(new_aliases);
+                new_row.appendChild(new_desc);
+                parent.appendChild(new_row);
+            });
+        }
+
+        document.getElementById("search_form").addEventListener("submit", searchEmoji);
+        document.getElementById("search_field").addEventListener("keyup", autoSearch);
+        window.onload = () => displaySearchResults();
+    </script>
+</body>
+</html>
